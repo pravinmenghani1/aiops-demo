@@ -1,0 +1,96 @@
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Demo 1.B · Inside a tool call
+  Question: "Is the map-tiles-api pipeline healthy right now?"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  LLM  MOCK MODE · scripted responses (m1.b) · no LLM is called
+
+── 1 · What we send the model ────────────────────────────────────────────────────────────────────
+╭─ messages ─────────────────────────────────────────────────────────────────────────────────────╮
+│ [                                                                                              │
+│   {                                                                                            │
+│     "role": "system",                                                                          │
+│     "content": "You are a CI assistant. Use your tools to check live status; never guess."     │
+│   },                                                                                           │
+│   {                                                                                            │
+│     "role": "user",                                                                            │
+│     "content": "Is the map-tiles-api pipeline healthy right now?"                              │
+│   }                                                                                            │
+│ ]                                                                                              │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ tools: the tool definition (the model's only manual) ─────────────────────────────────────────╮
+│ [                                                                                              │
+│   {                                                                                            │
+│     "name": "get_pipeline_status",                                                             │
+│     "description": "Get the latest run status of a CI pipeline, with its duration and recent   │
+│       pass rate.",                                                                             │
+│     "parameters": {                                                                            │
+│       "type": "object",                                                                        │
+│       "properties": {                                                                          │
+│         "pipeline": {                                                                          │
+│           "type": "string",                                                                    │
+│           "description": "Pipeline name, for example map-tiles-api"                            │
+│         }                                                                                      │
+│       },                                                                                       │
+│       "required": [                                                                            │
+│         "pipeline"                                                                             │
+│       ]                                                                                        │
+│     }                                                                                          │
+│   }                                                                                            │
+│ ]                                                                                              │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+── 2 · What the model sends back ─────────────────────────────────────────────────────────────────
+╭─ the model's reply ────────────────────────────────────────────────────────────────────────────╮
+│ {                                                                                              │
+│   "content": null,                                                                             │
+│   "tool_calls": [                                                                              │
+│     {                                                                                          │
+│       "id": "call_1",                                                                          │
+│       "name": "get_pipeline_status",                                                           │
+│       "arguments": {                                                                           │
+│         "pipeline": "map-tiles-api"                                                            │
+│       }                                                                                        │
+│     }                                                                                          │
+│   ]                                                                                            │
+│ }                                                                                              │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ NOTICE ───────────────────────────────────────────────────────────────────────────────────────╮
+│ Nothing has touched the CI system yet. The model has only asked. Your code decides whether     │
+│ this tool runs.                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+── 3 · Our code runs the tool ────────────────────────────────────────────────────────────────────
+ACT       get_pipeline_status(pipeline="map-tiles-api")
+╭─ tool result ──────────────────────────────────────────────────────────────────────────────────╮
+│ {                                                                                              │
+│   "pipeline": "map-tiles-api",                                                                 │
+│   "platform": "GitHub Actions",                                                                │
+│   "last_run": 4815,                                                                            │
+│   "status": "SUCCESS",                                                                         │
+│   "finished": "2026-10-12T08:13:00+05:30",                                                     │
+│   "duration_s": 208,                                                                           │
+│   "last_10_runs": {                                                                            │
+│     "passed": 10,                                                                              │
+│     "failed": 0                                                                                │
+│   },                                                                                           │
+│   "finished_relative": "47 minutes ago"                                                        │
+│ }                                                                                              │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+── 4 · We send the result back, and the model answers ────────────────────────────────────────────
+╭─ the message we append to the conversation ────────────────────────────────────────────────────╮
+│ {                                                                                              │
+│   "role": "tool",                                                                              │
+│   "tool_call_id": "call_1",                                                                    │
+│   "name": "get_pipeline_status",                                                               │
+│   "content": "<the tool result above, sent as a JSON string>"                                  │
+│ }                                                                                              │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+╭─ ANSWER ───────────────────────────────────────────────────────────────────────────────────────╮
+│ Yes, map-tiles-api looks healthy. Its last run (#4815) succeeded 47 minutes ago in 3 min 28 s, │
+│ and 10 of its last 10 runs passed.                                                             │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+  The final answer uses only what the tool returned. Ask: where would you put a guardrail in this
+  flow?

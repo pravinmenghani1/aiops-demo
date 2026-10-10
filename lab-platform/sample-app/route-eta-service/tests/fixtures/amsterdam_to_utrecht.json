@@ -1,0 +1,2 @@
+{"id": "AMS-UTR-01", "from": "Amsterdam Centraal", "to": "Utrecht Centraal",
+ "segments": [{"road": "urban", "km": 6.0}, {"road": "motorway", "km": 40.5}, {"road": "urban", "km": 0.55}]}

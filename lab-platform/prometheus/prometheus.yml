@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  - job_name: build-agents
+    static_configs:
+      - targets: ["build-agent-07:8700"]   # the ops API exports host and mount labels itself
+  - job_name: services
+    static_configs:
+      - targets: ["prod-api:8080", "staging-api:8080"]
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

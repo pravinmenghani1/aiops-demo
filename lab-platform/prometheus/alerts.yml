@@ -1,0 +1,18 @@
+groups:
+  - name: agentops-lab
+    rules:
+      - alert: BuildAgentDiskAlmostFull
+        expr: agentops_disk_used_ratio > 0.90
+        for: 20s
+        labels:
+          severity: warning
+          agentops_auto: "true"   # the agent starts investigating this alert automatically
+        annotations:
+          summary: "Disk {{ $labels.mount }} on {{ $labels.host }} is {{ $value | humanizePercentage }} full (threshold 90%)"
+      - alert: ServiceDown
+        expr: up{job="services"} == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.instance }} is not answering Prometheus scrapes"

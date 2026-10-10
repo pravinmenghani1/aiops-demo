@@ -1,0 +1,53 @@
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Demo 1.C · Alert to action
+  Incoming alert, handed to the agent as-is:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭─ ALERT ────────────────────────────────────────────────────────────────────────────────────────╮
+│ ALERT [warning] build-agent-07: disk usage 95% on /var/lib/jenkins (threshold 90%).            │
+│ Investigate and fix it safely.                                                                 │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+  LLM  MOCK MODE · scripted responses (m1.c) · no LLM is called
+THINK     I'll confirm the current disk usage on build-agent-07 before suggesting anything.
+ACT       get_disk_usage(host="build-agent-07")
+OBSERVE   {"host": "build-agent-07", "mount": "/var/lib/jenkins", "size_gb": 100.0, "used_gb":
+          95.1, "free_gb": 4.9, "used_pct": 95, "alert_threshold_pct": 90}
+THINK     Disk is at 95% with 4.9 GB free. I'll look for old build artifacts that are safe to
+          remove.
+ACT       list_old_artifacts(host="build-agent-07", older_than_days=14)
+OBSERVE   {"host": "build-agent-07", "older_than_days": 14, "count": 6, "total_gb": 31.4}
+          artifacts: (6 items)
+            {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4688", "size_gb": 6.2,
+                "age_days": 41}
+            {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4702", "size_gb": 5.8,
+                "age_days": 33}
+            {"path": "/var/lib/jenkins/jobs/map-tiles-api/builds/2210", "size_gb": 7.4,
+                "age_days": 28}
+            {"path": "/var/lib/jenkins/jobs/traffic-ingest/builds/1190", "size_gb": 4.1,
+                "age_days": 22}
+            {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4741", "size_gb": 4.6,
+                "age_days": 19}
+            {"path": "/var/lib/jenkins/jobs/map-tiles-api/builds/2251", "size_gb": 3.3,
+                "age_days": 16}
+THINK     6 artifact folders older than 14 days use 31.4 GB. Removing them should bring usage well
+          under the 90% threshold. This deletes files, so it needs approval.
+ACT       cleanup_artifacts(host="build-agent-07", older_than_days=14)
+
+╭─ APPROVAL NEEDED ──────────────────────────────────────────────────────────────────────────────╮
+│ The agent wants to run:  cleanup_artifacts(host="build-agent-07", older_than_days=14)          │
+│ This tool changes something, so a human must approve it.                                       │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+  Approve? (yes/no): no
+HUMAN     declined
+OBSERVE   {"error": "Declined by the human operator. Do not retry; summarise and stop."}
+
+╭─ ANSWER ───────────────────────────────────────────────────────────────────────────────────────╮
+│ No changes made: the cleanup was declined. build-agent-07 is still at 95% (4.9 GB free), above │
+│ the 90% threshold.                                                                             │
+│                                                                                                │
+│ Recommendation: delete the 6 build folders older than 14 days (31.4 GB) during the next quiet  │
+│ window, or ask the service owners which ones they need. Builds from the last 14 days stay      │
+│ untouched either way.                                                                          │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+  Disk on build-agent-07 is now 95% used (4.9 GB free). Everything here is simulated; no real
+  files were touched.

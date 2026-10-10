@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo 1.C · Alert to action</title>
+<style>
+body{margin:0;background:#0d1117;color:#e6edf3}
+main{max-width:1000px;margin:0 auto;padding:24px 16px}
+h1{font:600 18px/1.4 -apple-system,Segoe UI,Calibri,sans-serif;color:#8b949e;margin:0 0 12px}
+pre{font:13px/1.22 Menlo,Consolas,"DejaVu Sans Mono",monospace;white-space:pre;overflow-x:auto;margin:0}
+</style></head><body><main><h1>Demo 1.C · Alert to action</h1><pre>
+<span style="color:#2ec4b6">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color:#e6edf3;font-weight:700">  Demo 1.C · Alert to action</span>
+<span style="color:#8b949e">  Incoming alert, handed to the agent as-is:</span>
+<span style="color:#2ec4b6">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color:#f85149">╭─ </span><span style="color:#f85149;font-weight:700">ALERT</span><span style="color:#f85149"> ────────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#f85149">│ </span>ALERT [warning] build-agent-07: disk usage 95% on /var/lib/jenkins (threshold 90%).           <span style="color:#f85149"> │</span>
+<span style="color:#f85149">│ </span>Investigate and fix it safely.                                                                <span style="color:#f85149"> │</span>
+<span style="color:#f85149">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+<span style="color:#d29922;font-weight:700">  LLM  </span><span style="color:#d29922">MOCK MODE · scripted responses (m1.c) · no LLM is called</span>
+<span style="color:#2ec4b6;font-weight:700">THINK    </span> I&#x27;ll confirm the current disk usage on build-agent-07 before suggesting anything.
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">get_disk_usage(host=&quot;build-agent-07&quot;)</span>
+<span style="color:#58a6ff;font-weight:700">OBSERVE  </span> <span style="color:#8b949e">{&quot;host&quot;: &quot;build-agent-07&quot;, &quot;mount&quot;: &quot;/var/lib/jenkins&quot;, &quot;size_gb&quot;: 100.0, &quot;used_gb&quot;:</span>
+          <span style="color:#8b949e">95.1, &quot;free_gb&quot;: 4.9, &quot;used_pct&quot;: 95, &quot;alert_threshold_pct&quot;: 90}</span>
+<span style="color:#2ec4b6;font-weight:700">THINK    </span> Disk is at 95% with 4.9 GB free. I&#x27;ll look for old build artifacts that are safe to
+          remove.
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">list_old_artifacts(host=&quot;build-agent-07&quot;, older_than_days=14)</span>
+<span style="color:#58a6ff;font-weight:700">OBSERVE  </span> <span style="color:#8b949e">{&quot;host&quot;: &quot;build-agent-07&quot;, &quot;older_than_days&quot;: 14, &quot;count&quot;: 6, &quot;total_gb&quot;: 31.4}</span>
+          <span style="color:#8b949e">artifacts: (6 items)</span>
+          <span style="color:#8b949e">  {&quot;path&quot;: &quot;/var/lib/jenkins/jobs/route-eta-service/builds/4688&quot;, &quot;size_gb&quot;: 6.2,</span>
+          <span style="color:#8b949e">      &quot;age_days&quot;: 41}</span>
+          <span style="color:#8b949e">  {&quot;path&quot;: &quot;/var/lib/jenkins/jobs/route-eta-service/builds/4702&quot;, &quot;size_gb&quot;: 5.8,</span>
+          <span style="color:#8b949e">      &quot;age_days&quot;: 33}</span>
+          <span style="color:#8b949e">  {&quot;path&quot;: &quot;/var/lib/jenkins/jobs/map-tiles-api/builds/2210&quot;, &quot;size_gb&quot;: 7.4,</span>
+          <span style="color:#8b949e">      &quot;age_days&quot;: 28}</span>
+          <span style="color:#8b949e">  {&quot;path&quot;: &quot;/var/lib/jenkins/jobs/traffic-ingest/builds/1190&quot;, &quot;size_gb&quot;: 4.1,</span>
+          <span style="color:#8b949e">      &quot;age_days&quot;: 22}</span>
+          <span style="color:#8b949e">  {&quot;path&quot;: &quot;/var/lib/jenkins/jobs/route-eta-service/builds/4741&quot;, &quot;size_gb&quot;: 4.6,</span>
+          <span style="color:#8b949e">      &quot;age_days&quot;: 19}</span>
+          <span style="color:#8b949e">  {&quot;path&quot;: &quot;/var/lib/jenkins/jobs/map-tiles-api/builds/2251&quot;, &quot;size_gb&quot;: 3.3,</span>
+          <span style="color:#8b949e">      &quot;age_days&quot;: 16}</span>
+<span style="color:#2ec4b6;font-weight:700">THINK    </span> 6 artifact folders older than 14 days use 31.4 GB. Removing them should bring usage well
+          under the 90% threshold. This deletes files, so it needs approval.
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">cleanup_artifacts(host=&quot;build-agent-07&quot;, older_than_days=14)</span>
+
+<span style="color:#d29922">╭─ </span><span style="color:#d29922;font-weight:700">APPROVAL NEEDED</span><span style="color:#d29922"> ──────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#d29922">│ </span>The agent wants to run:  cleanup_artifacts(host=&quot;build-agent-07&quot;, older_than_days=14)         <span style="color:#d29922"> │</span>
+<span style="color:#d29922">│ </span>This tool changes something, so a human must approve it.                                      <span style="color:#d29922"> │</span>
+<span style="color:#d29922">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+<span style="color:#d29922;font-weight:700">  Approve? (yes/no): </span>no
+<span style="color:#d29922;font-weight:700">HUMAN    </span> <span style="color:#f85149">declined</span>
+<span style="color:#58a6ff;font-weight:700">OBSERVE  </span> <span style="color:#8b949e">{&quot;error&quot;: &quot;Declined by the human operator. Do not retry; summarise and stop.&quot;}</span>
+
+<span style="color:#3fb950">╭─ </span><span style="color:#3fb950;font-weight:700">ANSWER</span><span style="color:#3fb950"> ───────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#3fb950">│ </span>No changes made: the cleanup was declined. build-agent-07 is still at 95% (4.9 GB free), above<span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>the 90% threshold.                                                                            <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>                                                                                              <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>Recommendation: delete the 6 build folders older than 14 days (31.4 GB) during the next quiet <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>window, or ask the service owners which ones they need. Builds from the last 14 days stay     <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>untouched either way.                                                                         <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+<span style="color:#8b949e;font-style:italic">  Disk on build-agent-07 is now 95% used (4.9 GB free). Everything here is simulated; no real</span>
+<span style="color:#8b949e;font-style:italic">  files were touched.</span></pre></main></body></html>

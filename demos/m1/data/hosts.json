@@ -1,0 +1,16 @@
+{
+  "build-agent-07": {
+    "mount": "/var/lib/jenkins", "size_gb": 100.0, "used_gb": 95.1, "alert_threshold_pct": 90,
+    "artifacts": [
+      {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4688", "size_gb": 6.2, "age_days": 41},
+      {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4702", "size_gb": 5.8, "age_days": 33},
+      {"path": "/var/lib/jenkins/jobs/map-tiles-api/builds/2210",     "size_gb": 7.4, "age_days": 28},
+      {"path": "/var/lib/jenkins/jobs/traffic-ingest/builds/1190",    "size_gb": 4.1, "age_days": 22},
+      {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4741", "size_gb": 4.6, "age_days": 19},
+      {"path": "/var/lib/jenkins/jobs/map-tiles-api/builds/2251",     "size_gb": 3.3, "age_days": 16},
+      {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4790", "size_gb": 4.9, "age_days": 6},
+      {"path": "/var/lib/jenkins/jobs/map-tiles-api/builds/2302",     "size_gb": 3.8, "age_days": 3},
+      {"path": "/var/lib/jenkins/jobs/route-eta-service/builds/4812", "size_gb": 2.7, "age_days": 0}
+    ]
+  }
+}

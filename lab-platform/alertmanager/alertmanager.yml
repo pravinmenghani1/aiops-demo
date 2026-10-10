@@ -1,0 +1,12 @@
+route:
+  receiver: agentops
+  group_by: ["alertname", "host"]
+  group_wait: 5s
+  group_interval: 30s
+  repeat_interval: 1h
+
+receivers:
+  - name: agentops
+    webhook_configs:
+      - url: "http://agentops:8000/webhook/alertmanager"
+        send_resolved: true

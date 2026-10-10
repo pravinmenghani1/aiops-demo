@@ -1,0 +1,89 @@
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Demo 1.A · Same question, three answers
+  Question for all three: "Why did last night's build of route-eta-service fail?"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  LLM  MOCK MODE · scripted responses (m1.a.plain) · no LLM is called
+
+── Run 1 · Plain LLM, no data ────────────────────────────────────────────────────────────────────
+  Tools available: none
+
+╭─ ANSWER ───────────────────────────────────────────────────────────────────────────────────────╮
+│ Last night's route-eta-service build most likely failed because of a dependency conflict. A    │
+│ transitive package was probably upgraded during the install step, which broke the build before │
+│ the tests could run. Pin the dependency versions in requirements.txt and re-run the pipeline.  │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+── Run 2 · Agent with one tool (get_build_status) ────────────────────────────────────────────────
+  Tools available: get_build_status
+THINK     I'll check the status of last night's build.
+ACT       get_build_status()
+OBSERVE   {"id": 4812, "pipeline": "route-eta-service", "trigger": "nightly", "branch": "main",
+          "status": "FAILED", "started": "2026-10-12T02:10:00+05:30", "duration_s": 312, "agent":
+          "build-agent-07", "commit": "a1b9c3e", "failed_step": "pytest (step 4 of 6)",
+          "started_relative": "6 hours ago"}
+
+╭─ ANSWER ───────────────────────────────────────────────────────────────────────────────────────╮
+│ Last night's nightly build of route-eta-service (#4812) FAILED at pytest (step 4 of 6) on      │
+│ build-agent-07. That's as far as I can see: without the build log I can't tell you why the     │
+│ tests failed.                                                                                  │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+── Run 3 · Agentic workflow (status, log, commit) ────────────────────────────────────────────────
+  Tools available: get_build_status, get_build_log, get_commit
+THINK     First I'll check the status of last night's build.
+ACT       get_build_status()
+OBSERVE   {"id": 4812, "pipeline": "route-eta-service", "trigger": "nightly", "branch": "main",
+          "status": "FAILED", "started": "2026-10-12T02:10:00+05:30", "duration_s": 312, "agent":
+          "build-agent-07", "commit": "a1b9c3e", "failed_step": "pytest (step 4 of 6)",
+          "started_relative": "6 hours ago"}
+THINK     Build 4812 failed at pytest (step 4 of 6). I'll read the end of its log to find out why.
+ACT       get_build_log(build_id=4812, tail=40)
+OBSERVE   {"build_id": 4812, "total_lines": 41, "showing": "last 40 lines"}
+          log: (40 lines, showing the last 12)
+            02:14:05 E       AssertionError: assert 37 == 38
+            02:14:05 E        +  where 37 = compute_eta(Route(id='AMS-UTR-01',
+                distance_km=44.6, ...))
+            02:14:05
+            02:14:05 tests/test_eta.py:88: AssertionError
+            02:14:07 === short test summary info ===
+            02:14:07 FAILED tests/test_eta.py::test_route_eta - AssertionError: assert 37 == 38
+            02:14:07 === 1 failed, 213 passed in 46.12s ===
+            02:14:07 [build-agent-07] ERROR: step 'pytest' exited with code 1
+            02:14:08 [build-agent-07] Step 5/6: package (skipped: previous step failed)
+            02:14:08 [build-agent-07] Step 6/6: publish artifacts (skipped: previous step
+                failed)
+            02:14:09 [build-agent-07] Recording test results: reports/junit.xml (214 tests, 1
+                failure)
+            02:15:12 [build-agent-07] Finished: FAILURE
+THINK     The log shows `FAILED tests/test_eta.py::test_route_eta - AssertionError: assert 37 ==
+          38`. I'll check what changed in commit a1b9c3e, which triggered the build.
+ACT       get_commit(sha="a1b9c3e")
+OBSERVE   {"sha": "a1b9c3e", "pipeline": "route-eta-service", "author": "ravi.k", "committed":
+          "2026-10-11T18:42:00+05:30", "message": "Round ETA to nearest minute instead of
+          rounding up", "files_changed": ["src/eta.py"], "lines": "+3 -2", "review": "approved by
+          1 reviewer"}
+
+╭─ ANSWER ───────────────────────────────────────────────────────────────────────────────────────╮
+│ Build #4812 (route-eta-service, nightly) failed in the pytest step: 1 of 214 tests failed.     │
+│                                                                                                │
+│ Evidence from the log: `tests/test_eta.py:88: AssertionError` and `FAILED                      │
+│ tests/test_eta.py::test_route_eta - AssertionError: assert 37 == 38`.                          │
+│                                                                                                │
+│ Likely cause: commit a1b9c3e by ravi.k ("Round ETA to nearest minute instead of rounding up")  │
+│ changed src/eta.py the evening before. The test still expects the old rounding, so the ETA now │
+│ comes out one minute lower (37 instead of 38).                                                 │
+│                                                                                                │
+│ Next step: ask ravi.k whether the new rounding is intended. If yes, update the test's expected │
+│ value; if not, revert a1b9c3e. I haven't changed anything.                                     │
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+── What changed between the three runs? ──────────────────────────────────────────────────────────
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Approach              Data it saw              Tool calls   Grounded?                     
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Plain LLM, no data    nothing                  0            No: it guessed                
+  Agent with one tool   build status             1            Partly: knows that it failed  
+  Agentic workflow      status, log and commit   3            Yes: quotes the failing line  
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Ask the room: which answer would you paste into an incident ticket?

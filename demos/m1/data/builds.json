@@ -1,0 +1,10 @@
+{
+  "now": "2026-10-12T09:00:00+05:30",
+  "builds": [
+    {"id": 4809, "pipeline": "route-eta-service", "trigger": "nightly", "branch": "main", "started": "2026-10-11T02:10:00+05:30", "status": "SUCCESS", "duration_s": 298, "agent": "build-agent-04", "commit": "9f2d7e1"},
+    {"id": 4810, "pipeline": "map-tiles-api", "trigger": "push", "branch": "main", "started": "2026-10-11T11:05:00+05:30", "status": "SUCCESS", "duration_s": 214, "agent": "build-agent-02", "commit": "c44e0b2"},
+    {"id": 4811, "pipeline": "traffic-ingest", "trigger": "push", "branch": "main", "started": "2026-10-11T16:22:00+05:30", "status": "SUCCESS", "duration_s": 402, "agent": "build-agent-05", "commit": "77ab1f0"},
+    {"id": 4812, "pipeline": "route-eta-service", "trigger": "nightly", "branch": "main", "started": "2026-10-12T02:10:00+05:30", "status": "FAILED", "failed_step": "pytest (step 4 of 6)", "duration_s": 312, "agent": "build-agent-07", "commit": "a1b9c3e"},
+    {"id": 4815, "pipeline": "map-tiles-api", "trigger": "push", "branch": "main", "started": "2026-10-12T08:09:32+05:30", "status": "SUCCESS", "duration_s": 208, "agent": "build-agent-02", "commit": "d90f6a3"}
+  ]
+}

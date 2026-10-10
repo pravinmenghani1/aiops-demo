@@ -1,0 +1,67 @@
+# Jenkins configuration as code for the AgentOps Lab.
+# Secrets come from environment variables and Docker secrets; nothing sensitive is stored here.
+jenkins:
+  systemMessage: "AgentOps Lab · Jenkins for the Module 1 real-system demo"
+  numExecutors: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+        - id: "agentops"
+          password: "${JENKINS_AGENT_PASSWORD}"
+  # Least privilege: the AI agent's account can read jobs and start builds, nothing else.
+  authorizationStrategy:
+    globalMatrix:
+      entries:
+        - user:
+            name: "admin"
+            permissions:
+              - "Overall/Administer"
+        - user:
+            name: "agentops"
+            permissions:
+              - "Overall/Read"
+              - "Job/Read"
+              - "Job/Build"
+              - "View/Read"
+  globalNodeProperties:
+    - envVars:
+        env:
+          - key: "REPO_URL"
+            value: "${REPO_URL}"
+  nodes:
+    - permanent:
+        name: "build-agent-07"
+        labelString: "build-agent-07"
+        mode: NORMAL
+        numExecutors: 2
+        remoteFS: "/home/jenkins/agent"
+        launcher:
+          ssh:
+            host: "build-agent-07"
+            port: 22
+            credentialsId: "build-agent-key"
+            javaPath: "/usr/local/bin/java"
+            launchTimeoutSeconds: 60
+            maxNumRetries: 30
+            retryWaitTime: 10
+            sshHostKeyVerificationStrategy:
+              manuallyTrustedKeyVerificationStrategy:
+                requireInitialManualTrust: false
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - basicSSHUserPrivateKey:
+              scope: SYSTEM
+              id: "build-agent-key"
+              username: "jenkins"
+              description: "SSH key for build-agent-07 (lab only)"
+              privateKeySource:
+                directEntry:
+                  privateKey: "${readFile:/run/secrets/build_agent_key}"
+unclassified:
+  location:
+    url: "http://localhost:8080/"

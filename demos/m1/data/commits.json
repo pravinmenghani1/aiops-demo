@@ -1,0 +1,6 @@
+{
+  "a1b9c3e": {"sha": "a1b9c3e", "pipeline": "route-eta-service", "author": "ravi.k", "committed": "2026-10-11T18:42:00+05:30",
+              "message": "Round ETA to nearest minute instead of rounding up", "files_changed": ["src/eta.py"], "lines": "+3 -2", "review": "approved by 1 reviewer"},
+  "9f2d7e1": {"sha": "9f2d7e1", "pipeline": "route-eta-service", "author": "meera.p", "committed": "2026-10-10T15:10:00+05:30",
+              "message": "Add Utrecht fixtures for ETA tests", "files_changed": ["tests/fixtures/amsterdam_to_utrecht.json"], "lines": "+120 -0", "review": "approved by 2 reviewers"}
+}

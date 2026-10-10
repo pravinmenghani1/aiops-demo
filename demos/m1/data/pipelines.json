@@ -1,0 +1,8 @@
+{
+  "map-tiles-api":     {"pipeline": "map-tiles-api", "platform": "GitHub Actions", "last_run": 4815, "status": "SUCCESS",
+                        "finished": "2026-10-12T08:13:00+05:30", "duration_s": 208, "last_10_runs": {"passed": 10, "failed": 0}},
+  "route-eta-service": {"pipeline": "route-eta-service", "platform": "Jenkins", "last_run": 4812, "status": "FAILED",
+                        "finished": "2026-10-12T02:15:12+05:30", "duration_s": 312, "last_10_runs": {"passed": 9, "failed": 1}},
+  "traffic-ingest":    {"pipeline": "traffic-ingest", "platform": "GitLab CI/CD", "last_run": 4811, "status": "SUCCESS",
+                        "finished": "2026-10-11T16:28:42+05:30", "duration_s": 402, "last_10_runs": {"passed": 10, "failed": 0}}
+}

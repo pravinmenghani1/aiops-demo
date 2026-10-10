@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo 1.A · Same question, three answers</title>
+<style>
+body{margin:0;background:#0d1117;color:#e6edf3}
+main{max-width:1000px;margin:0 auto;padding:24px 16px}
+h1{font:600 18px/1.4 -apple-system,Segoe UI,Calibri,sans-serif;color:#8b949e;margin:0 0 12px}
+pre{font:13px/1.22 Menlo,Consolas,"DejaVu Sans Mono",monospace;white-space:pre;overflow-x:auto;margin:0}
+</style></head><body><main><h1>Demo 1.A · Same question, three answers</h1><pre>
+<span style="color:#2ec4b6">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color:#e6edf3;font-weight:700">  Demo 1.A · Same question, three answers</span>
+<span style="color:#8b949e">  Question for all three: &quot;Why did last night&#x27;s build of route-eta-service fail?&quot;</span>
+<span style="color:#2ec4b6">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color:#d29922;font-weight:700">  LLM  </span><span style="color:#d29922">MOCK MODE · scripted responses (m1.a.plain) · no LLM is called</span>
+
+<span style="color:#2ec4b6;font-weight:700">── Run 1 · Plain LLM, no data </span><span style="color:#2ec4b6">────────────────────────────────────────────────────────────────────</span>
+<span style="color:#8b949e;font-style:italic">  Tools available: none</span>
+
+<span style="color:#3fb950">╭─ </span><span style="color:#3fb950;font-weight:700">ANSWER</span><span style="color:#3fb950"> ───────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#3fb950">│ </span>Last night&#x27;s route-eta-service build most likely failed because of a dependency conflict. A   <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>transitive package was probably upgraded during the install step, which broke the build before<span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>the tests could run. Pin the dependency versions in requirements.txt and re-run the pipeline. <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+
+<span style="color:#2ec4b6;font-weight:700">── Run 2 · Agent with one tool (get_build_status) </span><span style="color:#2ec4b6">────────────────────────────────────────────────</span>
+<span style="color:#8b949e;font-style:italic">  Tools available: get_build_status</span>
+<span style="color:#2ec4b6;font-weight:700">THINK    </span> I&#x27;ll check the status of last night&#x27;s build.
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">get_build_status()</span>
+<span style="color:#58a6ff;font-weight:700">OBSERVE  </span> <span style="color:#8b949e">{&quot;id&quot;: 4812, &quot;pipeline&quot;: &quot;route-eta-service&quot;, &quot;trigger&quot;: &quot;nightly&quot;, &quot;branch&quot;: &quot;main&quot;,</span>
+          <span style="color:#8b949e">&quot;status&quot;: &quot;FAILED&quot;, &quot;started&quot;: &quot;2026-10-12T02:10:00+05:30&quot;, &quot;duration_s&quot;: 312, &quot;agent&quot;:</span>
+          <span style="color:#8b949e">&quot;build-agent-07&quot;, &quot;commit&quot;: &quot;a1b9c3e&quot;, &quot;failed_step&quot;: &quot;pytest (step 4 of 6)&quot;,</span>
+          <span style="color:#8b949e">&quot;started_relative&quot;: &quot;6 hours ago&quot;}</span>
+
+<span style="color:#3fb950">╭─ </span><span style="color:#3fb950;font-weight:700">ANSWER</span><span style="color:#3fb950"> ───────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#3fb950">│ </span>Last night&#x27;s nightly build of route-eta-service (#4812) FAILED at pytest (step 4 of 6) on     <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>build-agent-07. That&#x27;s as far as I can see: without the build log I can&#x27;t tell you why the    <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>tests failed.                                                                                 <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+
+<span style="color:#2ec4b6;font-weight:700">── Run 3 · Agentic workflow (status, log, commit) </span><span style="color:#2ec4b6">────────────────────────────────────────────────</span>
+<span style="color:#8b949e;font-style:italic">  Tools available: get_build_status, get_build_log, get_commit</span>
+<span style="color:#2ec4b6;font-weight:700">THINK    </span> First I&#x27;ll check the status of last night&#x27;s build.
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">get_build_status()</span>
+<span style="color:#58a6ff;font-weight:700">OBSERVE  </span> <span style="color:#8b949e">{&quot;id&quot;: 4812, &quot;pipeline&quot;: &quot;route-eta-service&quot;, &quot;trigger&quot;: &quot;nightly&quot;, &quot;branch&quot;: &quot;main&quot;,</span>
+          <span style="color:#8b949e">&quot;status&quot;: &quot;FAILED&quot;, &quot;started&quot;: &quot;2026-10-12T02:10:00+05:30&quot;, &quot;duration_s&quot;: 312, &quot;agent&quot;:</span>
+          <span style="color:#8b949e">&quot;build-agent-07&quot;, &quot;commit&quot;: &quot;a1b9c3e&quot;, &quot;failed_step&quot;: &quot;pytest (step 4 of 6)&quot;,</span>
+          <span style="color:#8b949e">&quot;started_relative&quot;: &quot;6 hours ago&quot;}</span>
+<span style="color:#2ec4b6;font-weight:700">THINK    </span> Build 4812 failed at pytest (step 4 of 6). I&#x27;ll read the end of its log to find out why.
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">get_build_log(build_id=4812, tail=40)</span>
+<span style="color:#58a6ff;font-weight:700">OBSERVE  </span> <span style="color:#8b949e">{&quot;build_id&quot;: 4812, &quot;total_lines&quot;: 41, &quot;showing&quot;: &quot;last 40 lines&quot;}</span>
+          <span style="color:#8b949e">log: (40 lines, showing the last 12)</span>
+          <span style="color:#8b949e">  02:14:05 E       AssertionError: assert 37 == 38</span>
+          <span style="color:#8b949e">  02:14:05 E        +  where 37 = compute_eta(Route(id=&#x27;AMS-UTR-01&#x27;,</span>
+          <span style="color:#8b949e">      distance_km=44.6, ...))</span>
+          <span style="color:#8b949e">  02:14:05</span>
+          <span style="color:#8b949e">  02:14:05 tests/test_eta.py:88: AssertionError</span>
+          <span style="color:#8b949e">  02:14:07 === short test summary info ===</span>
+          <span style="color:#8b949e">  02:14:07 FAILED tests/test_eta.py::test_route_eta - AssertionError: assert 37 == 38</span>
+          <span style="color:#8b949e">  02:14:07 === 1 failed, 213 passed in 46.12s ===</span>
+          <span style="color:#8b949e">  02:14:07 [build-agent-07] ERROR: step &#x27;pytest&#x27; exited with code 1</span>
+          <span style="color:#8b949e">  02:14:08 [build-agent-07] Step 5/6: package (skipped: previous step failed)</span>
+          <span style="color:#8b949e">  02:14:08 [build-agent-07] Step 6/6: publish artifacts (skipped: previous step</span>
+          <span style="color:#8b949e">      failed)</span>
+          <span style="color:#8b949e">  02:14:09 [build-agent-07] Recording test results: reports/junit.xml (214 tests, 1</span>
+          <span style="color:#8b949e">      failure)</span>
+          <span style="color:#8b949e">  02:15:12 [build-agent-07] Finished: FAILURE</span>
+<span style="color:#2ec4b6;font-weight:700">THINK    </span> The log shows `FAILED tests/test_eta.py::test_route_eta - AssertionError: assert 37 ==
+          38`. I&#x27;ll check what changed in commit a1b9c3e, which triggered the build.
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">get_commit(sha=&quot;a1b9c3e&quot;)</span>
+<span style="color:#58a6ff;font-weight:700">OBSERVE  </span> <span style="color:#8b949e">{&quot;sha&quot;: &quot;a1b9c3e&quot;, &quot;pipeline&quot;: &quot;route-eta-service&quot;, &quot;author&quot;: &quot;ravi.k&quot;, &quot;committed&quot;:</span>
+          <span style="color:#8b949e">&quot;2026-10-11T18:42:00+05:30&quot;, &quot;message&quot;: &quot;Round ETA to nearest minute instead of</span>
+          <span style="color:#8b949e">rounding up&quot;, &quot;files_changed&quot;: [&quot;src/eta.py&quot;], &quot;lines&quot;: &quot;+3 -2&quot;, &quot;review&quot;: &quot;approved by</span>
+          <span style="color:#8b949e">1 reviewer&quot;}</span>
+
+<span style="color:#3fb950">╭─ </span><span style="color:#3fb950;font-weight:700">ANSWER</span><span style="color:#3fb950"> ───────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#3fb950">│ </span>Build #4812 (route-eta-service, nightly) failed in the pytest step: 1 of 214 tests failed.    <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>                                                                                              <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>Evidence from the log: `tests/test_eta.py:88: AssertionError` and `FAILED                     <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>tests/test_eta.py::test_route_eta - AssertionError: assert 37 == 38`.                         <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>                                                                                              <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>Likely cause: commit a1b9c3e by ravi.k (&quot;Round ETA to nearest minute instead of rounding up&quot;) <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>changed src/eta.py the evening before. The test still expects the old rounding, so the ETA now<span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>comes out one minute lower (37 instead of 38).                                                <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>                                                                                              <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>Next step: ask ravi.k whether the new rounding is intended. If yes, update the test&#x27;s expected<span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>value; if not, revert a1b9c3e. I haven&#x27;t changed anything.                                    <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+
+<span style="color:#2ec4b6;font-weight:700">── What changed between the three runs? </span><span style="color:#2ec4b6">──────────────────────────────────────────────────────────</span>
+<span style="color:#2ec4b6">  ──────────────────────────────────────────────────────────────────────────────────────────</span>
+  <span style="color:#2ec4b6;font-weight:700">Approach             </span> <span style="color:#2ec4b6;font-weight:700">Data it saw             </span> <span style="color:#2ec4b6;font-weight:700">Tool calls  </span> <span style="color:#2ec4b6;font-weight:700">Grounded?                     </span>
+<span style="color:#2ec4b6">  ──────────────────────────────────────────────────────────────────────────────────────────</span>
+  Plain LLM, no data    nothing                  0            <span style="color:#f85149">No: it guessed</span>                
+  Agent with one tool   build status             1            <span style="color:#d29922">Partly: knows that it failed</span>  
+  Agentic workflow      status, log and commit   3            <span style="color:#3fb950">Yes: quotes the failing line</span>  
+<span style="color:#2ec4b6">  ──────────────────────────────────────────────────────────────────────────────────────────</span>
+<span style="color:#8b949e;font-style:italic">  Ask the room: which answer would you paste into an incident ticket?</span></pre></main></body></html>

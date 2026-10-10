@@ -1,0 +1,132 @@
+# AgentOps Lab: real Jenkins, a real SSH build agent, two services, Prometheus, Alertmanager
+# and the agent with its approval dashboard. Start it with `python3 labctl.py up`.
+# Every port is bound to 127.0.0.1, so nothing is reachable from outside your Mac.
+name: agentops-lab
+
+services:
+  jenkins:
+    build: ./jenkins
+    image: agentops-lab/jenkins:local
+    environment:
+      CASC_JENKINS_CONFIG: /var/jenkins_config/casc.yaml
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false -Xmx1g"
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?run "python3 labctl.py init" first}
+      JENKINS_AGENT_PASSWORD: ${JENKINS_AGENT_PASSWORD:?run "python3 labctl.py init" first}
+      REPO_URL: /srv/git/route-eta-service.git
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./jenkins/casc.yaml:/var/jenkins_config/casc.yaml:ro
+    secrets:
+      - build_agent_key
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - build-agent-07
+    restart: unless-stopped
+
+  build-agent-07:
+    build: ./build-agent
+    image: agentops-lab/build-agent:local
+    hostname: build-agent-07
+    environment:
+      JENKINS_AGENT_SSH_PUBKEY: ${BUILD_AGENT_PUBKEY:?run "python3 labctl.py init" first}
+      OPS_TOKEN: ${OPS_TOKEN:?run "python3 labctl.py init" first}
+      OPS_HOSTNAME: build-agent-07
+    volumes:
+      - ./state/git:/srv/git:ro            # the route-eta-service repo Jenkins clones
+      - agent_ssh:/etc/ssh                 # keep the SSH host keys Jenkins has learned to trust
+    tmpfs:
+      - /srv/artifacts:size=629145600      # a deliberately small 600 MB artifact disk
+    restart: unless-stopped
+
+  prod-api:
+    build: ./services
+    environment:
+      SERVICE_NAME: prod-api
+      ENVIRONMENT: production
+      BASE_SESSIONS: "1240"
+      ADMIN_TOKEN: ${SERVICES_ADMIN_TOKEN:?run "python3 labctl.py init" first}
+    ports:
+      - "127.0.0.1:8101:8080"
+    restart: always                        # a restart really exits the process; Docker brings it back
+
+  staging-api:
+    build: ./services                      # same code as prod-api; the second build comes from cache
+    environment:
+      SERVICE_NAME: staging-api
+      ENVIRONMENT: staging
+      BASE_SESSIONS: "12"
+      ADMIN_TOKEN: ${SERVICES_ADMIN_TOKEN:?run "python3 labctl.py init" first}
+    ports:
+      - "127.0.0.1:8102:8080"
+    restart: always
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=2d
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "127.0.0.1:9090:9090"
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    ports:
+      - "127.0.0.1:9093:9093"
+    restart: unless-stopped
+
+  agentops:
+    build:
+      context: ..
+      dockerfile: lab-platform/agentops/Dockerfile
+      args:
+        INSTALL_BOTO3: ${INSTALL_BOTO3:-false}
+    image: agentops-lab/agentops:local
+    env_file:
+      - path: ../.env                      # the LLM settings the Module 1 demos already use
+        required: false
+      - path: ./.env                       # lab secrets, GitHub, and any LLM overrides
+        required: true
+    environment:
+      JENKINS_ADMIN_PASSWORD: ""           # the agent only gets its own least-privilege Jenkins account
+      DATA_DIR: /data
+      JENKINS_URL: http://jenkins:8080
+      JENKINS_USER: agentops
+      JENKINS_JOB: route-eta-service
+      LOCAL_GIT_DIR: /srv/git/route-eta-service.git
+      BUILD_AGENTS: build-agent-07=http://build-agent-07:8700
+      SERVICES: prod-api=http://prod-api:8080,staging-api=http://staging-api:8080
+      PROMETHEUS_URL: http://prometheus:9090
+      ALERTMANAGER_URL: http://alertmanager:9093
+      NO_PROXY: jenkins,build-agent-07,prod-api,staging-api,prometheus,alertmanager,localhost,127.0.0.1,host.docker.internal
+      no_proxy: jenkins,build-agent-07,prod-api,staging-api,prometheus,alertmanager,localhost,127.0.0.1,host.docker.internal
+    volumes:
+      - ./state/git:/srv/git:ro
+      - agentops_data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # reach Ollama or a proxy running on your Mac
+    depends_on:
+      - jenkins
+      - build-agent-07
+      - prometheus
+      - alertmanager
+    restart: unless-stopped
+
+secrets:
+  build_agent_key:
+    file: ./state/ssh/build_agent_key
+
+volumes:
+  jenkins_home:
+  agent_ssh:
+  agentops_data:

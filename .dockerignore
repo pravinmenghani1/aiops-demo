@@ -1,0 +1,8 @@
+# Keep secrets and local state out of the agentops image (built with the kit root as context).
+**/.env
+**/__pycache__
+.git
+lab-platform/state
+demos
+tests
+outputs

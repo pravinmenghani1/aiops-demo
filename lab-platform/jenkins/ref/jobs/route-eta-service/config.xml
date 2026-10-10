@@ -1,0 +1,43 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition>
+  <description>route-eta-service: checkout, test and package on build-agent-07 (AgentOps Lab)</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition">
+    <script>pipeline {
+  agent { label 'build-agent-07' }
+  options { buildDiscarder(logRotator(numToKeepStr: '30')) }
+  stages {
+    stage('Checkout') {
+      steps {
+        sh 'rm -rf src &amp;&amp; git clone --quiet "$REPO_URL" src'
+        sh 'cd src &amp;&amp; git log -1 --format="Commit %h by %an: %s"'
+        script {
+          currentBuild.description = sh(returnStdout: true, script: 'cd src &amp;&amp; git log -1 --format="%h %s"').trim()
+        }
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'cd src &amp;&amp; python3 -m pytest -q -p no:cacheprovider'
+      }
+    }
+    stage('Package') {
+      steps {
+        sh """
+          dest=/srv/artifacts/route-eta-service/\$BUILD_NUMBER
+          mkdir -p "\$dest"
+          tar -czf "\$dest/route-eta-service.tgz" -C src .
+          head -c 25000000 /dev/zero &gt; "\$dest/debug-symbols.bin"
+          echo "Archived build \$BUILD_NUMBER to \$dest"
+        """
+      }
+    }
+  }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

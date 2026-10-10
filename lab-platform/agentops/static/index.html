@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AgentOps Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1220'/%3E%3Cpath d='M9 22l7-12 7 12' stroke='%2322d3ee' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='19' r='2' fill='%2322d3ee'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div id="unsafe-banner" class="unsafe-banner" hidden>
+    Guardrails OFF · unsafe demo mode: no policy, no approvals, no injection scan, and a gullible prompt. Turn them back on after the demo.
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <div class="brand-name">AgentOps Lab</div>
+        <div class="brand-sub">Agentic AI for DevOps · live systems</div>
+      </div>
+    </div>
+    <div id="status" class="status" aria-label="System status"></div>
+    <div class="guard">
+      <button id="guard-btn" class="switch on" role="switch" aria-checked="true">
+        <span class="switch-track"><span class="switch-knob"></span></span>
+        <span class="switch-label">Guardrails <b id="guard-state">ON</b></span>
+      </button>
+      <div id="guard-confirm" class="popover" hidden>
+        <p><b>Turn guardrails off?</b></p>
+        <p>New runs get no allow-list policy, no human approval and no injection scan, plus a prompt that follows instructions it finds in logs. Use this only for the prompt-injection demo.</p>
+        <div class="row">
+          <button id="guard-off" class="btn danger">Turn off</button>
+          <button id="guard-cancel" class="btn ghost">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="col left">
+      <section class="panel">
+        <h2>Ask the agent</h2>
+        <form id="ask-form" class="ask">
+          <textarea id="ask-input" rows="3" placeholder="e.g. Why did the last Jenkins build fail?" maxlength="2000"></textarea>
+          <div class="row">
+            <span class="hint">Enter to run · Shift+Enter for a new line</span>
+            <button class="btn primary" type="submit">Run agent</button>
+          </div>
+        </form>
+        <div class="presets" id="presets"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Alerts <span class="count" id="alert-count"></span></h2>
+        <ul id="alerts" class="list"></ul>
+        <p class="empty" id="alerts-empty">No alerts received yet. Prometheus sends them here through Alertmanager.</p>
+      </section>
+
+      <section class="panel grow">
+        <h2>Runs <span class="count" id="run-count"></span></h2>
+        <ul id="runs" class="list runs"></ul>
+        <p class="empty" id="runs-empty">No runs yet. Ask a question, or start a scenario with <code>labctl.py</code>.</p>
+      </section>
+    </aside>
+
+    <section class="col centre panel trace-panel">
+      <div id="run-head" class="run-head" hidden>
+        <div class="run-q" id="run-q"></div>
+        <div class="run-meta" id="run-meta"></div>
+      </div>
+      <div id="trace" class="trace" aria-live="polite"></div>
+      <div id="trace-empty" class="trace-empty">
+        <h3>Watch the agent work</h3>
+        <p>Every step of a run appears here as it happens:</p>
+        <ul class="legend">
+          <li><span class="tag think">THINK</span> what the model says it will do next</li>
+          <li><span class="tag act">ACT</span> the tool it asked to run, with arguments</li>
+          <li><span class="tag observe">OBSERVE</span> the real result from Jenkins, GitHub, the build agent or Prometheus</li>
+          <li><span class="tag approval">APPROVAL</span> a risky action waiting for you</li>
+          <li><span class="tag blocked">BLOCKED</span> the policy in code said no</li>
+          <li><span class="tag warn">WARNING</span> tool output that looks like a prompt injection</li>
+          <li><span class="tag answer">ANSWER</span> the final answer</li>
+        </ul>
+      </div>
+    </section>
+
+    <aside class="col right panel">
+      <h2>Audit log <span class="hint">who did what</span></h2>
+      <ul id="audit" class="list audit"></ul>
+      <p class="empty" id="audit-empty">Every tool call, approval and setting change is recorded here.</p>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

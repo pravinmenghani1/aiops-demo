@@ -1,0 +1,7 @@
+# Module 1 demos use only the Python standard library (Python 3.11 or newer).
+# Nothing to install for OpenAI, Azure OpenAI, Ollama or Gemini.
+#
+# For Amazon Bedrock, uncomment:
+# boto3>=1.35
+#
+# Later modules add LangChain/LangGraph and the platform clients here.

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo 1.B · Inside a tool call</title>
+<style>
+body{margin:0;background:#0d1117;color:#e6edf3}
+main{max-width:1000px;margin:0 auto;padding:24px 16px}
+h1{font:600 18px/1.4 -apple-system,Segoe UI,Calibri,sans-serif;color:#8b949e;margin:0 0 12px}
+pre{font:13px/1.22 Menlo,Consolas,"DejaVu Sans Mono",monospace;white-space:pre;overflow-x:auto;margin:0}
+</style></head><body><main><h1>Demo 1.B · Inside a tool call</h1><pre>
+<span style="color:#2ec4b6">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color:#e6edf3;font-weight:700">  Demo 1.B · Inside a tool call</span>
+<span style="color:#8b949e">  Question: &quot;Is the map-tiles-api pipeline healthy right now?&quot;</span>
+<span style="color:#2ec4b6">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color:#d29922;font-weight:700">  LLM  </span><span style="color:#d29922">MOCK MODE · scripted responses (m1.b) · no LLM is called</span>
+
+<span style="color:#2ec4b6;font-weight:700">── 1 · What we send the model </span><span style="color:#2ec4b6">────────────────────────────────────────────────────────────────────</span>
+<span style="color:#2ec4b6">╭─ </span><span style="color:#2ec4b6;font-weight:700">messages</span><span style="color:#2ec4b6"> ─────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#2ec4b6">│ </span>[                                                                                             <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>  {                                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    <span style="color:#7ee787">&quot;role&quot;</span>: <span style="color:#a5d6ff">&quot;system&quot;</span>,                                                                         <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    <span style="color:#7ee787">&quot;content&quot;</span>: <span style="color:#a5d6ff">&quot;You are a CI assistant. Use your tools to check live status; never guess.&quot;</span>    <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>  },                                                                                          <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>  {                                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    <span style="color:#7ee787">&quot;role&quot;</span>: <span style="color:#a5d6ff">&quot;user&quot;</span>,                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    <span style="color:#7ee787">&quot;content&quot;</span>: <span style="color:#a5d6ff">&quot;Is the map-tiles-api pipeline healthy right now?&quot;</span>                             <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>  }                                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>]                                                                                             <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+<span style="color:#2ec4b6">╭─ </span><span style="color:#2ec4b6;font-weight:700">tools: the tool definition (the model&#x27;s only manual)</span><span style="color:#2ec4b6"> ─────────────────────────────────────────╮</span>
+<span style="color:#2ec4b6">│ </span>[                                                                                             <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>  {                                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    <span style="color:#7ee787">&quot;name&quot;</span>: <span style="color:#a5d6ff">&quot;get_pipeline_status&quot;</span>,                                                            <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    <span style="color:#7ee787">&quot;description&quot;</span>: <span style="color:#a5d6ff">&quot;Get the latest run status of a CI pipeline, with its duration and recent</span>  <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>      <span style="color:#a5d6ff">pass rate.&quot;,</span>                                                                            <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    <span style="color:#7ee787">&quot;parameters&quot;</span>: {                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>      <span style="color:#7ee787">&quot;type&quot;</span>: <span style="color:#a5d6ff">&quot;object&quot;</span>,                                                                       <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>      <span style="color:#7ee787">&quot;properties&quot;</span>: {                                                                         <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>        <span style="color:#7ee787">&quot;pipeline&quot;</span>: {                                                                         <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>          <span style="color:#7ee787">&quot;type&quot;</span>: <span style="color:#a5d6ff">&quot;string&quot;</span>,                                                                   <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>          <span style="color:#7ee787">&quot;description&quot;</span>: <span style="color:#a5d6ff">&quot;Pipeline name, for example map-tiles-api&quot;</span>                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>        }                                                                                     <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>      },                                                                                      <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>      <span style="color:#7ee787">&quot;required&quot;</span>: [                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>        <span style="color:#a5d6ff">&quot;pipeline&quot;</span>                                                                            <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>      ]                                                                                       <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>    }                                                                                         <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>  }                                                                                           <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">│ </span>]                                                                                             <span style="color:#2ec4b6"> │</span>
+<span style="color:#2ec4b6">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+
+<span style="color:#f78166;font-weight:700">── 2 · What the model sends back </span><span style="color:#f78166">─────────────────────────────────────────────────────────────────</span>
+<span style="color:#f78166">╭─ </span><span style="color:#f78166;font-weight:700">the model&#x27;s reply</span><span style="color:#f78166"> ────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#f78166">│ </span>{                                                                                             <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>  <span style="color:#7ee787">&quot;content&quot;</span>: <span style="color:#f78166">null</span>,                                                                            <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>  <span style="color:#7ee787">&quot;tool_calls&quot;</span>: [                                                                             <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>    {                                                                                         <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>      <span style="color:#7ee787">&quot;id&quot;</span>: <span style="color:#a5d6ff">&quot;call_1&quot;</span>,                                                                         <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>      <span style="color:#7ee787">&quot;name&quot;</span>: <span style="color:#a5d6ff">&quot;get_pipeline_status&quot;</span>,                                                          <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>      <span style="color:#7ee787">&quot;arguments&quot;</span>: {                                                                          <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>        <span style="color:#7ee787">&quot;pipeline&quot;</span>: <span style="color:#a5d6ff">&quot;map-tiles-api&quot;</span>                                                           <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>      }                                                                                       <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>    }                                                                                         <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>  ]                                                                                           <span style="color:#f78166"> │</span>
+<span style="color:#f78166">│ </span>}                                                                                             <span style="color:#f78166"> │</span>
+<span style="color:#f78166">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+<span style="color:#d29922">╭─ </span><span style="color:#d29922;font-weight:700">NOTICE</span><span style="color:#d29922"> ───────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#d29922">│ </span>Nothing has touched the CI system yet. The model has only asked. Your code decides whether    <span style="color:#d29922"> │</span>
+<span style="color:#d29922">│ </span>this tool runs.                                                                               <span style="color:#d29922"> │</span>
+<span style="color:#d29922">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+
+<span style="color:#58a6ff;font-weight:700">── 3 · Our code runs the tool </span><span style="color:#58a6ff">────────────────────────────────────────────────────────────────────</span>
+<span style="color:#f78166;font-weight:700">ACT      </span> <span style="color:#f78166">get_pipeline_status(pipeline=&quot;map-tiles-api&quot;)</span>
+<span style="color:#58a6ff">╭─ </span><span style="color:#58a6ff;font-weight:700">tool result</span><span style="color:#58a6ff"> ──────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#58a6ff">│ </span>{                                                                                             <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;pipeline&quot;</span>: <span style="color:#a5d6ff">&quot;map-tiles-api&quot;</span>,                                                                <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;platform&quot;</span>: <span style="color:#a5d6ff">&quot;GitHub Actions&quot;</span>,                                                               <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;last_run&quot;</span>: <span style="color:#58a6ff">4815</span>,                                                                           <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;status&quot;</span>: <span style="color:#a5d6ff">&quot;SUCCESS&quot;</span>,                                                                        <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;finished&quot;</span>: <span style="color:#a5d6ff">&quot;2026-10-12T08:13:00+05:30&quot;</span>,                                                    <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;duration_s&quot;</span>: <span style="color:#58a6ff">208</span>,                                                                          <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;last_10_runs&quot;</span>: {                                                                           <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>    <span style="color:#7ee787">&quot;passed&quot;</span>: <span style="color:#58a6ff">10</span>,                                                                             <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>    <span style="color:#7ee787">&quot;failed&quot;</span>: <span style="color:#58a6ff">0</span>                                                                               <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  },                                                                                          <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;finished_relative&quot;</span>: <span style="color:#a5d6ff">&quot;47 minutes ago&quot;</span>                                                       <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>}                                                                                             <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+
+<span style="color:#3fb950;font-weight:700">── 4 · We send the result back, and the model answers </span><span style="color:#3fb950">────────────────────────────────────────────</span>
+<span style="color:#58a6ff">╭─ </span><span style="color:#58a6ff;font-weight:700">the message we append to the conversation</span><span style="color:#58a6ff"> ────────────────────────────────────────────────────╮</span>
+<span style="color:#58a6ff">│ </span>{                                                                                             <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;role&quot;</span>: <span style="color:#a5d6ff">&quot;tool&quot;</span>,                                                                             <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;tool_call_id&quot;</span>: <span style="color:#a5d6ff">&quot;call_1&quot;</span>,                                                                   <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;name&quot;</span>: <span style="color:#a5d6ff">&quot;get_pipeline_status&quot;</span>,                                                              <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>  <span style="color:#7ee787">&quot;content&quot;</span>: <span style="color:#a5d6ff">&quot;&lt;the tool result above, sent as a JSON string&gt;&quot;</span>                                 <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">│ </span>}                                                                                             <span style="color:#58a6ff"> │</span>
+<span style="color:#58a6ff">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+
+<span style="color:#3fb950">╭─ </span><span style="color:#3fb950;font-weight:700">ANSWER</span><span style="color:#3fb950"> ───────────────────────────────────────────────────────────────────────────────────────╮</span>
+<span style="color:#3fb950">│ </span>Yes, map-tiles-api looks healthy. Its last run (#4815) succeeded 47 minutes ago in 3 min 28 s,<span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">│ </span>and 10 of its last 10 runs passed.                                                            <span style="color:#3fb950"> │</span>
+<span style="color:#3fb950">╰────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
+<span style="color:#8b949e;font-style:italic">  The final answer uses only what the tool returned. Ask: where would you put a guardrail in this</span>
+<span style="color:#8b949e;font-style:italic">  flow?</span></pre></main></body></html>

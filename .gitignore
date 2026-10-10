@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+lab-platform/state/
+lab-platform/.env
+.DS_Store
